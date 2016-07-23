@@ -12,6 +12,13 @@ class ViewController: UIViewController {
 
     var mainClock = UIImageView()
     var rollerImage = UIImageView()
+    var panRoller = UIPanGestureRecognizer()
+    
+    let xCentre: CGFloat = 197
+    let yCentre: CGFloat = 197
+    let xStart: CGFloat = 180
+    let yStart: CGFloat = 35
+    let clockRadius:CGFloat = 150
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,15 +37,33 @@ class ViewController: UIViewController {
         centerImage.image = clockImage
         mainClock.addSubview(centerImage)
         
-        rollerImage = UIImageView(frame: CGRect(x: 180, y: 35, width: 40, height: 40))
+        rollerImage = UIImageView(frame: CGRect(x: xStart, y: yStart, width: 40, height: 40))
         rollerImage.image = clockImage
         mainClock.addSubview(rollerImage)
         
+        panRoller = UIPanGestureRecognizer(target: self, action: #selector(dragRoller))
+        view.addGestureRecognizer(panRoller)
+        
+        rollerImage.userInteractionEnabled = true
+        
     }
     
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        holdRoller()
+//    override func viewDidAppear(animated: Bool) {
+//        super.viewDidAppear(animated)
+//        holdRoller()
+//        
+//    }
+    
+    func dragRoller(sender: UIPanGestureRecognizer) {
+        let point = sender.locationInView(mainClock)
+        //rollerImage.center = point
+        let slope = (point.y - yCentre)/(point.x - xCentre)
+
+        let yFinal = yCentre + cos(slope)*clockRadius
+        let xFinal = xCentre + sin(slope)*clockRadius
+            
+        rollerImage.center = CGPoint(x: xFinal, y: yFinal)
+        
     }
     
     func holdRoller() {
@@ -48,7 +73,7 @@ class ViewController: UIViewController {
         
         //        path.addQuadCurveToPoint(CGPoint(x: 180, y: 350), controlPoint: CGPoint(x: 520, y: 185))
         
-        path.addArcWithCenter(CGPoint(x: 197, y: 197), radius: CGFloat(150), startAngle: CGFloat(-M_PI/2), endAngle: CGFloat(M_PI/2), clockwise: true)
+        path.addArcWithCenter(CGPoint(x: xStart, y: yStart), radius: CGFloat(150), startAngle: CGFloat(-M_PI/2), endAngle: CGFloat(M_PI/2), clockwise: true)
         
         //        let animate = CAKeyframeAnimation(keyPath: "position")
         let animation = CAKeyframeAnimation(keyPath: "position")
@@ -62,8 +87,9 @@ class ViewController: UIViewController {
         
         rollerImage.layer.addAnimation(animation, forKey: "animate position along path")
         
-        
     }
+    
+    
 
 }
 
