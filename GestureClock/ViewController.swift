@@ -58,12 +58,37 @@ class ViewController: UIViewController {
         let point = sender.locationInView(mainClock)
         //rollerImage.center = point
         let slope = (point.y - yCentre)/(point.x - xCentre)
-
-        let yFinal = yCentre + cos(slope)*clockRadius
-        let xFinal = xCentre + sin(slope)*clockRadius
-            
-        rollerImage.center = CGPoint(x: xFinal, y: yFinal)
+        var yFinal = yCentre
+        var xFinal = xCentre
+        //let x = arcco
         
+        //let x = atan(slope)
+        //let x = atan2(slope, 1)
+        let x = atan2f(Float(point.y - yCentre), Float(point.x - xCentre))
+        
+//        if point.x > xCentre && point.y > yCentre {             //1
+//            yFinal = yCentre + sin(CGFloat(x))*clockRadius
+//            xFinal = xCentre + cos(CGFloat(x))*clockRadius
+//            
+//        } else if point.x > xCentre && point.y < yCentre {      //4
+//            yFinal = yCentre + sin(CGFloat(x))*clockRadius
+//            xFinal = xCentre - cos(CGFloat(x))*clockRadius
+//
+//        } else if point.x < xCentre && point.y > yCentre {      //2
+//            yFinal = yCentre - sin(CGFloat(x))*clockRadius
+//            xFinal = xCentre + cos(CGFloat(x))*clockRadius
+//
+//        } else if point.x < xCentre && point.y < yCentre {      //3
+//            yFinal = yCentre - sin(CGFloat(x))*clockRadius
+//            xFinal = xCentre - cos(CGFloat(x))*clockRadius
+//
+//        }
+        yFinal = yCentre + sin(CGFloat(x))*clockRadius
+        xFinal = xCentre + cos(CGFloat(x))*clockRadius
+        
+        UIView.animateWithDuration(2, animations: {
+            self.rollerImage.center = CGPoint(x: xFinal, y: yFinal)
+        })
     }
     
     func holdRoller() {
