@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     let yStart: CGFloat = 35
     let clockRadius:CGFloat = 150
     
+    var button = UIButton()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,6 +48,14 @@ class ViewController: UIViewController {
         
         rollerImage.userInteractionEnabled = true
         
+        button.frame = CGRect(x: 160, y: 60, width: 80, height: 80)
+        button.backgroundColor = UIColor.redColor()
+        //button.titleLabel = "Start"
+        //button.currentTitle = "Start"
+        view.addSubview(button)
+        
+        button.addTarget(self, action: #selector(holdRoller), forControlEvents: .TouchUpInside)
+        
     }
     
 //    override func viewDidAppear(animated: Bool) {
@@ -57,10 +67,9 @@ class ViewController: UIViewController {
     func dragRoller(sender: UIPanGestureRecognizer) {
         let point = sender.locationInView(mainClock)
         //rollerImage.center = point
-        let slope = (point.y - yCentre)/(point.x - xCentre)
+        //let slope = (point.y - yCentre)/(point.x - xCentre)
         var yFinal = yCentre
         var xFinal = xCentre
-        //let x = arcco
         
         //let x = atan(slope)
         //let x = atan2(slope, 1)
@@ -94,11 +103,15 @@ class ViewController: UIViewController {
     func holdRoller() {
         let path = UIBezierPath()
         
-        // path.moveToPoint(CGPoint(x: 180, y: 35))
+         //path.moveToPoint(CGPoint(x: rollerImage.frame.origin.x, y: rollerImage.frame.origin.y))
         
         //        path.addQuadCurveToPoint(CGPoint(x: 180, y: 350), controlPoint: CGPoint(x: 520, y: 185))
         
-        path.addArcWithCenter(CGPoint(x: xStart, y: yStart), radius: CGFloat(150), startAngle: CGFloat(-M_PI/2), endAngle: CGFloat(M_PI/2), clockwise: true)
+        let theta = atan2f(Float(rollerImage.frame.origin.y - yCentre), Float(rollerImage.frame.origin.x - xCentre))
+        
+        path.addArcWithCenter(CGPoint(x: xCentre, y: yCentre), radius: CGFloat(150), startAngle: CGFloat(theta), endAngle: CGFloat(-M_PI/2), clockwise: false)
+        
+        //path.addQuadCurveToPoint(CGPoint(x: xStart, y: yStart), controlPoint: CGPoint(x: xStart+1, y: yStart+1))
         
         //        let animate = CAKeyframeAnimation(keyPath: "position")
         let animation = CAKeyframeAnimation(keyPath: "position")
@@ -106,9 +119,19 @@ class ViewController: UIViewController {
         
         animation.fillMode = kCAFillModeForwards
         animation.removedOnCompletion = false
+        var duration = 10
+        if theta > 0 && theta < 3.14/2 {
+            duration = 20
+        } else if theta > 3.14/2 && theta < 3.14{
+            duration = 35
+        } else if theta < 0 && theta > -3.14/2 {
+            duration = 5
+        } else if theta < -3.14/2 && theta > -3.14 {
+            duration = 45
+        }
         
         animation.repeatCount = 0
-        animation.duration = 5.0
+        animation.duration = Double(duration)
         
         rollerImage.layer.addAnimation(animation, forKey: "animate position along path")
         
